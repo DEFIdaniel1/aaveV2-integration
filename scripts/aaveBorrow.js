@@ -12,29 +12,21 @@ async function main() {
     const wethTokenAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
     // approve
     await approveErc20(wethTokenAddress, lendingPool.address, tokenAmount, deployer)
-    // DEPOSIT function requirements
-    //     function deposit(
-    //     address asset,
-    //     uint256 amount,
-    //     address onBehalfOf,
-    //     uint16 referralCode //discontinued - value = 0
     await lendingPool.deposit(wethTokenAddress, tokenAmount, deployer, 0)
     console.log(`Deposited ${tokenAmount} WETH!`)
 
-    // how much we can borrow from userData
+    // check borrow limit
     let { availableBorrowsETH, totalDebtETH } = await getUserAccountData(lendingPool, deployer)
-    // convert avilable ETH borrow to DAI value
+    // convert available ETH borrow to DAI value
     const daiPrice = await getDAIPrice()
     const amountDAIToBorrow = +availableBorrowsETH * 0.95 * (1 / +daiPrice)
     const amountDAIToBorrowWei = ethers.utils.parseEther(amountDAIToBorrow.toString())
 
     //BORROW
     await borrowDAI(lendingPool, amountDAIToBorrowWei, deployer)
-    //See remainder
-    await getUserAccountData(lendingPool, deployer)
     //REPAY
     await repayDai(lendingPool, amountDAIToBorrowWei, deployer)
-    // //See remainder
+    //See remainder
     await getUserAccountData(lendingPool, deployer)
 }
 

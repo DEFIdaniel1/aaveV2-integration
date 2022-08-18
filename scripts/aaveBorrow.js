@@ -2,6 +2,7 @@
 const { ethers, getNamedAccounts } = require('hardhat')
 const { getWeth, tokenAmount } = require('./getWeth')
 const daiContractAddress = '0x6b175474e89094c44da98b954eedeac495271d0f'
+const daiEthChainlinkAddress = '0x773616e4d11a78f511299002da57a0a94577f1f4'
 
 async function main() {
     //convert ETH to WETH (erc20 standard needed)
@@ -23,7 +24,6 @@ async function main() {
     // how much we can borrow from userData
     let { availableBorrowsETH, totalDebtETH } = await getUserAccountData(lendingPool, deployer)
     // convert avilable ETH borrow to DAI value
-    console.log('after user account data')
     const daiPrice = await getDAIPrice()
     const amountDAIToBorrow = +availableBorrowsETH * 0.95 * (1 / +daiPrice)
     const amountDAIToBorrowWei = ethers.utils.parseEther(amountDAIToBorrow.toString())
@@ -83,7 +83,10 @@ async function getUserAccountData(lendingPool, account) {
 
 // get DAI price from chainlink oracle
 async function getDAIPrice() {
-    const daiETHPriceFeed = await ethers.getContractAt('AggregatorV3Interface', daiContractAddress)
+    const daiETHPriceFeed = await ethers.getContractAt(
+        'AggregatorV3Interface',
+        daiEthChainlinkAddress
+    )
     //function latestRoundData()
     //  returns (
     //      uint80 roundId,

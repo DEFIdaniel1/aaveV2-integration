@@ -23,6 +23,7 @@ async function main() {
     // how much we can borrow from userData
     let { availableBorrowsETH, totalDebtETH } = await getUserAccountData(lendingPool, deployer)
     // convert avilable ETH borrow to DAI value
+    console.log('after user account data')
     const daiPrice = await getDAIPrice()
     const amountDAIToBorrow = +availableBorrowsETH * 0.95 * (1 / +daiPrice)
     const amountDAIToBorrowWei = ethers.utils.parseEther(amountDAIToBorrow.toString())
